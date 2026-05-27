@@ -3,7 +3,8 @@ import { Request, Response } from 'express'
 import {
   getCountrySalaryInsights,
   getDashboardMetrics,
-  getJobTitleInsights
+  getJobTitleInsights,
+  getCountryCounts
 } from './insights.service'
 
 export const getCountryInsightsController = async (
@@ -44,5 +45,17 @@ export const getDashboardMetricsController = async (
   res.json({
     success: true,
     data: metrics
+  })
+}
+
+export const getCountryCountsController = async (
+  _req: Request,
+  res: Response
+) => {
+  const countryCounts = await getCountryCounts()
+
+  res.json({
+    success: true,
+    data: countryCounts
   })
 }

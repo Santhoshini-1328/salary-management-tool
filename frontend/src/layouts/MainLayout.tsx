@@ -61,12 +61,13 @@ function MainLayout() {
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
           background: 'linear-gradient(90deg, #1f4dd8 0%, #4d78ff 100%)',
-          borderBottom: '1px solid rgba(255,255,255,0.12)'
+          borderBottom: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 0
         }}
       >
         <Toolbar sx={{ minHeight: 72, px: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton size="large" onClick={() => setCollapsed((s) => !s)} sx={{ color: '#fff' }}>
+            <IconButton size="large" onClick={() => setCollapsed((s) => !s)} sx={{ color: '#fff', borderRadius: 0 }}>
               {collapsed ? (
                 <SvgIcon>
                   <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
@@ -99,7 +100,8 @@ function MainLayout() {
             color: '#f4f7ff',
             border: 'none',
             pt: 2,
-            transition: 'width 220ms'
+            transition: 'width 220ms',
+            borderRadius: 0
           }
         }}
       >
@@ -122,7 +124,7 @@ function MainLayout() {
               to={item.path}
               selected={location.pathname === item.path}
               sx={{
-                borderRadius: 2,
+                borderRadius: 0,
                 mb: 0.5,
                 px: collapsed ? 1.25 : 2,
                 '&.Mui-selected': {

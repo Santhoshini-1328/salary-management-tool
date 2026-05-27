@@ -45,6 +45,11 @@ export const getDashboardMetrics = async () => {
     }
   })
 
+  const employeesByCountryWithCount = employeesByCountry.map((country) => ({
+    ...country,
+    count: typeof country._count === 'number' ? country._count : ((country._count as any)?._all ?? 0)
+  }))
+
   const highestPayingRoles = await prisma.employee.groupBy({
     by: ['jobTitle'],
     _avg: {
@@ -64,15 +69,15 @@ export const getDashboardMetrics = async () => {
   const minMax = await prisma.employee.aggregate({ _min: { salary: true }, _max: { salary: true } })
 
   // Distinct counts using groupBy
-  const countriesGroup = employeesByCountry
+  const countriesGroup = employeesByCountryWithCount
   const departmentsGroup = await prisma.employee.groupBy({ by: ['department'], _count: true })
 
   // Highest paying country by average salary
-  const sortedCountries = [...employeesByCountry].sort((a, b) => (b._avg.salary ?? 0) - (a._avg.salary ?? 0))
+  const sortedCountries = [...employeesByCountryWithCount].sort((a, b) => (b._avg.salary ?? 0) - (a._avg.salary ?? 0))
   const highestPayingCountry = sortedCountries[0] ?? null
 
   return {
-    employeesByCountry,
+    employeesByCountry: employeesByCountryWithCount,
     highestPayingRoles,
     totalEmployees,
     averageSalary: avgAggregate._avg.salary ?? null,
@@ -83,4 +88,16 @@ export const getDashboardMetrics = async () => {
     highestPayingCountry,
     highestPayingRole: highestPayingRoles[0] ?? null
   }
+}
+
+export const getCountryCounts = async () => {
+  const employeesByCountry = await prisma.employee.groupBy({
+    by: ['country'],
+    _count: true
+  })
+
+  return employeesByCountry.map((country) => ({
+    country: country.country,
+    count: typeof country._count === 'number' ? country._count : ((country._count as any)?._all ?? 0)
+  }))
 }

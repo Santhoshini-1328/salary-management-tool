@@ -22,6 +22,15 @@ function DashboardPage() {
     }
   })
 
+  const countryCountsQuery = useQuery<{ country: string; count: number }[], Error>({
+    queryKey: ['countryCounts'],
+    queryFn: async () => {
+      const response = await api.get('/insights/country-counts')
+      return response.data.data
+    },
+    staleTime: 1000 * 60 * 5
+  })
+
   const totalEmployees = useMemo(() => {
     if (!data) return 0
     return data.employeesByCountry.reduce(
@@ -44,11 +53,11 @@ function DashboardPage() {
   }, [data, totalEmployees])
 
   const topCountries = useMemo(() => {
-    if (!data) return []
-    return [...data.employeesByCountry]
-      .sort((a, b) => b._count._all - a._count._all)
+    if (!countryCountsQuery.data) return []
+    return [...countryCountsQuery.data]
+      .sort((a, b) => b.count - a.count)
       .slice(0, 5)
-  }, [data])
+  }, [countryCountsQuery.data])
 
   const formatCurrency = (value: number | null | undefined) =>
     value == null ? '$0' : `$${Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
@@ -158,11 +167,11 @@ function DashboardPage() {
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Employees by Country
               </Typography>
-              {isLoading || !data ? (
+              {countryCountsQuery.isLoading || !countryCountsQuery.data ? (
                 <Typography>Loading…</Typography>
               ) : (
                 <SimpleBarChart
-                  data={topCountries.map((c: any) => ({ label: c.country ?? c.name ?? 'Unknown', value: c._count?._all ?? 0 }))}
+                  data={topCountries.map((c: any) => ({ label: c.country, value: c.count }))}
                 />
               )}
             </CardContent>

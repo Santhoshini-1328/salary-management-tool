@@ -417,9 +417,10 @@ function EmployeesPage() {
               fontSize: '0.95rem'
             },
             '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaderTitle, & .MuiDataGrid-columnHeaderTitleContainer': {
-              color: 'black !important',
+              color: '#fff !important',
             },
             '& .MuiDataGrid-columnHeaderTitle': {
+              fontWeight: 700,
               whiteSpace: 'normal',
               lineHeight: 1.2,
             },
