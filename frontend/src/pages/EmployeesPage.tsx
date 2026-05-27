@@ -12,8 +12,11 @@ import {
   Snackbar,
   Stack,
   TextField,
-  Typography
+  Typography,
+  IconButton,
+  Tooltip
 } from '@mui/material'
+import SvgIcon from '@mui/material/SvgIcon'
 import { DataGrid } from '@mui/x-data-grid'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -291,32 +294,31 @@ function EmployeesPage() {
       headerName: 'Actions',
       sortable: false,
       filterable: false,
-      width: 260,
+      width: 120,
       renderCell: (params: any) => (
-        <Stack direction="row" spacing={1}>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => openDialog('view', params.row as Employee)}
-          >
-            View
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-            onClick={() => openDialog('edit', params.row as Employee)}
-          >
-            Edit
-          </Button>
-          <Button
-            size="small"
-            color="error"
-            variant="outlined"
-            onClick={() => handleDelete(String(params.row.id))}
-          >
-            Delete
-          </Button>
-        </Stack>
+        <Box sx={{ display: 'flex', gap: 1, marginTop: 1.5 }}>
+          <Tooltip title="View">
+            <IconButton size="small" onClick={() => openDialog('view', params.row as Employee)}>
+              <SvgIcon fontSize="small">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z" />
+              </SvgIcon>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton size="small" color="primary" onClick={() => openDialog('edit', params.row as Employee)}>
+              <SvgIcon fontSize="small">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+              </SvgIcon>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton size="small" color="error" onClick={() => handleDelete(String(params.row.id))}>
+              <SvgIcon fontSize="small">
+                <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+              </SvgIcon>
+            </IconButton>
+          </Tooltip>
+        </Box>
       )
     }
   ]
@@ -390,7 +392,7 @@ function EmployeesPage() {
         </Box>
       </Paper>
 
-      <Paper sx={{ height: 700, width: '100%', overflow: 'hidden', boxShadow: 4 }}>
+      <Paper sx={{ width: '100%', overflow: 'hidden', boxShadow: 4 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -404,19 +406,32 @@ function EmployeesPage() {
           getRowId={(row) => row.id}
           disableRowSelectionOnClick
           initialState={{ pagination: { paginationModel } }}
+          autoHeight
           sx={{
             border: 'none',
+            width: '100%',
+            minWidth: 0,
             '& .MuiDataGrid-columnHeaders': {
               backgroundColor: 'primary.main',
-              color: '#fff',
               borderBottom: 'none',
               fontSize: '0.95rem'
+            },
+            '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaderTitle, & .MuiDataGrid-columnHeaderTitleContainer': {
+              color: 'black !important',
+            },
+            '& .MuiDataGrid-columnHeaderTitle': {
+              whiteSpace: 'normal',
+              lineHeight: 1.2,
             },
             '& .MuiDataGrid-columnSeparator': {
               display: 'none'
             },
             '& .MuiDataGrid-cell': {
-              borderBottom: '1px solid rgba(224, 224, 224, 0.85)'
+              borderBottom: '1px solid rgba(224, 224, 224, 0.85)',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              minWidth: 0
             },
             '& .MuiDataGrid-row:hover': {
               backgroundColor: 'rgba(38, 92, 241, 0.05)'

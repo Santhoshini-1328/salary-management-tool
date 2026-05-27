@@ -5,16 +5,17 @@ import {
   Button,
   Card,
   CardContent,
-  TextField,
-  Typography
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/api'
 
 type CountryInsights = {
-  _count: {
-    _all: number
-  }
+  _count: number | { _all: number }
   _avg: {
     salary: number | null
   }
@@ -27,13 +28,39 @@ type CountryInsights = {
 }
 
 type JobTitleInsights = {
-  _count: {
-    _all: number
-  }
+  _count: number | { _all: number }
   _avg: {
     salary: number | null
   }
 }
+
+const COUNTRIES = [
+  'United States',
+  'Canada',
+  'Germany',
+  'United Kingdom',
+  'Netherlands',
+  'India',
+  'Singapore',
+  'Australia',
+  'Brazil',
+  'South Africa'
+]
+
+const ROLES = [
+  'Software Engineer',
+  'Senior Software Engineer',
+  'Engineering Manager',
+  'Data Analyst',
+  'Data Scientist',
+  'Product Manager',
+  'UX Designer',
+  'HR Business Partner',
+  'Recruiter',
+  'Sales Executive',
+  'Finance Analyst',
+  'Customer Support Specialist'
+]
 
 function InsightsPage() {
   const [country, setCountry] = useState('')
@@ -66,26 +93,33 @@ function InsightsPage() {
   })
 
   return (
-    <Box component="div">
+    <Box>
       <Typography variant="h4" sx={{ mb: 3 }}>
         Salary Insights
       </Typography>
 
-      <Box component="div" sx={{ display: 'grid', gap: 24, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
         <Card>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Country salary metrics
             </Typography>
 
-            <TextField
-              label="Country"
-              value={country}
-              onChange={(event) => setCountry(event.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder="e.g. United States"
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="country-select-label">Country</InputLabel>
+              <Select
+                labelId="country-select-label"
+                value={country}
+                label="Country"
+                onChange={(e) => setCountry(String(e.target.value))}
+              >
+                {COUNTRIES.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             {countryInsightsQuery.error && (
               <Alert severity="error">Unable to load country insights.</Alert>
@@ -94,10 +128,24 @@ function InsightsPage() {
             {countryInsightsQuery.isSuccess && (
               <Box component="div" sx={{ mt: 2 }}>
                 <Typography variant="subtitle1">Country: {country}</Typography>
-                <Typography>Employees: {countryInsightsQuery.data._count._all || 0}</Typography>
+                <Typography>
+                  Employees: {typeof countryInsightsQuery.data._count === 'number' ? countryInsightsQuery.data._count : countryInsightsQuery.data._count._all ?? 0}
+                </Typography>
                 <Typography>Average salary: {formatCurrency(countryInsightsQuery.data._avg.salary)}</Typography>
                 <Typography>Minimum salary: {formatCurrency(countryInsightsQuery.data._min.salary)}</Typography>
                 <Typography>Maximum salary: {formatCurrency(countryInsightsQuery.data._max.salary)}</Typography>
+
+                {(typeof countryInsightsQuery.data._count !== 'number' ? countryInsightsQuery.data._count._all === 0 : countryInsightsQuery.data._count === 0) && (countryInsightsQuery.data._avg.salary != null || countryInsightsQuery.data._min.salary != null || countryInsightsQuery.data._max.salary != null) && (
+                  <Alert severity="info" sx={{ mt: 2 }}>
+                    The API returned salary metrics but reported zero employees for this country. Please refresh or re-seed if you expect data to exist.
+                  </Alert>
+                )}
+
+                <Box sx={{ mt: 2 }}>
+                  <Button variant="outlined" onClick={() => countryInsightsQuery.refetch()}>
+                    Refresh
+                  </Button>
+                </Box>
               </Box>
             )}
           </CardContent>
@@ -109,23 +157,23 @@ function InsightsPage() {
               Job title salary benchmark
             </Typography>
 
-            <TextField
-              label="Job title"
-              value={jobTitle}
-              onChange={(event) => setJobTitle(event.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder="e.g. Software Engineer"
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="title-select-label">Job title</InputLabel>
+              <Select
+                labelId="title-select-label"
+                value={jobTitle}
+                label="Job title"
+                onChange={(e) => setJobTitle(String(e.target.value))}
+              >
+                {ROLES.map((r) => (
+                  <MenuItem key={r} value={r}>
+                    {r}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-            <Button
-              sx={{ mt: 1 }}
-              variant="contained"
-              disabled={!country || !jobTitle}
-              onClick={() => {
-                jobTitleInsightsQuery.refetch()
-              }}
-            >
+            <Button sx={{ mt: 1 }} variant="contained" disabled={!country || !jobTitle} onClick={() => jobTitleInsightsQuery.refetch()}>
               Refresh
             </Button>
 
@@ -141,7 +189,7 @@ function InsightsPage() {
                   {jobTitle} in {country}
                 </Typography>
                 <Typography>
-                  Employees: {jobTitleInsightsQuery.data._count._all || 0}
+                  Employees: {typeof jobTitleInsightsQuery.data._count === 'number' ? jobTitleInsightsQuery.data._count : jobTitleInsightsQuery.data._count._all || 0}
                 </Typography>
                 <Typography>
                   Average salary: {formatCurrency(jobTitleInsightsQuery.data._avg.salary)}

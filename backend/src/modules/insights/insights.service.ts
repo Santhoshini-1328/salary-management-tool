@@ -58,8 +58,29 @@ export const getDashboardMetrics = async () => {
     take: 5
   })
 
+  // Global aggregates
+  const totalEmployees = await prisma.employee.count()
+  const avgAggregate = await prisma.employee.aggregate({ _avg: { salary: true } })
+  const minMax = await prisma.employee.aggregate({ _min: { salary: true }, _max: { salary: true } })
+
+  // Distinct counts using groupBy
+  const countriesGroup = employeesByCountry
+  const departmentsGroup = await prisma.employee.groupBy({ by: ['department'], _count: true })
+
+  // Highest paying country by average salary
+  const sortedCountries = [...employeesByCountry].sort((a, b) => (b._avg.salary ?? 0) - (a._avg.salary ?? 0))
+  const highestPayingCountry = sortedCountries[0] ?? null
+
   return {
     employeesByCountry,
-    highestPayingRoles
+    highestPayingRoles,
+    totalEmployees,
+    averageSalary: avgAggregate._avg.salary ?? null,
+    highestSalary: minMax._max.salary ?? null,
+    lowestSalary: minMax._min.salary ?? null,
+    totalCountries: countriesGroup.length,
+    totalDepartments: departmentsGroup.length,
+    highestPayingCountry,
+    highestPayingRole: highestPayingRoles[0] ?? null
   }
 }
