@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "seed": "ts-node --transpile-only prisma/seed.ts",
+    "seed:reset": "ts-node --transpile-only prisma/seed.ts --reset",
+    "seed:append": "ts-node --transpile-only prisma/seed.ts --append"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
