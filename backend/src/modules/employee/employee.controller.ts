@@ -21,7 +21,10 @@ export const getEmployeesController = async (
 
   res.json({
     success: true,
-    data: employees
+    data: {
+      items: employees.employees,
+      count: employees.count
+    }
   })
 }
 

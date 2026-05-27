@@ -7,29 +7,39 @@ export const getEmployees = async (
 ) => {
   const skip = (page - 1) * limit
 
-  return prisma.employee.findMany({
-    where: {
-      OR: [
-        {
-          fullName: {
-            contains: search,
-            mode: 'insensitive'
-          }
-        },
-        {
-          email: {
-            contains: search,
-            mode: 'insensitive'
-          }
+  const where = {
+    OR: [
+      {
+        fullName: {
+          contains: search,
+          mode: 'insensitive' as const
         }
-      ]
-    },
-    skip,
-    take: limit,
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
+      },
+      {
+        email: {
+          contains: search,
+          mode: 'insensitive' as const
+        }
+      }
+    ]
+  }
+
+  const [employees, count] = await prisma.$transaction([
+    prisma.employee.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc'
+      }
+    }),
+    prisma.employee.count({ where })
+  ])
+
+  return {
+    employees,
+    count
+  }
 }
 
 export const createEmployee = async (data: any) => {

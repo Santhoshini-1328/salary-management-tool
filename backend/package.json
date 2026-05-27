@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "test": "jest",
     "seed": "ts-node --transpile-only prisma/seed.ts",
     "seed:reset": "ts-node --transpile-only prisma/seed.ts --reset",
     "seed:append": "ts-node --transpile-only prisma/seed.ts --append"
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.9.1",
     "@types/supertest": "^7.2.0",
     "jest": "^30.4.2",

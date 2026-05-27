@@ -21,6 +21,10 @@ const menuItems = [
   {
     label: 'Employees',
     path: '/employees'
+  },
+  {
+    label: 'Insights',
+    path: '/insights'
   }
 ]
 

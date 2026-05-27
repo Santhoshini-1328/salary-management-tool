@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 
 import DashboardPage from './pages/DashboardPage'
 import EmployeesPage from './pages/EmployeesPage'
+import InsightsPage from './pages/InsightsPage'
 import MainLayout from './layouts/MainLayout'
 
 function App() {
@@ -11,8 +12,8 @@ function App() {
         <Route path="/" element={<Navigate to="/dashboard" />} />
 
         <Route path="/dashboard" element={<DashboardPage />} />
-
         <Route path="/employees" element={<EmployeesPage />} />
+        <Route path="/insights" element={<InsightsPage />} />
       </Route>
     </Routes>
   )
