@@ -8,6 +8,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Paper,
   Snackbar,
   Stack,
   TextField,
@@ -322,23 +323,74 @@ function EmployeesPage() {
 
   return (
     <Box component="div">
-      <Box component="div" sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4">Employees</Typography>
-        <Button variant="contained" onClick={() => openDialog('create')}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+            Employees
+          </Typography>
+          <Typography color="text.secondary">
+            Browse team members, update compensation, and monitor payroll at a glance.
+          </Typography>
+        </Box>
+
+        <Button variant="contained" size="large" onClick={() => openDialog('create')}>
           Add Employee
         </Button>
       </Box>
 
-      <Box component="div" sx={{ mb: 2, maxWidth: 520 }}>
-        <TextField
-          label="Search employees"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          fullWidth
-        />
-      </Box>
+      <Paper sx={{ p: 3, mb: 3, backgroundColor: 'primary.light', color: 'primary.contrastText' }}>
+        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+          <Box>
+            <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: 0.8, mb: 1 }}>
+              Total employees
+            </Typography>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              {rowCount.toLocaleString()}
+            </Typography>
+          </Box>
 
-      <div style={{ height: 650, width: '100%' }}>
+          <Box>
+            <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: 0.8, mb: 1 }}>
+              Current page
+            </Typography>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              {paginationModel.page + 1}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: 0.8, mb: 1 }}>
+              Page size
+            </Typography>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              {paginationModel.pageSize}
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
+
+      <Paper sx={{ p: 3, mb: 3, boxShadow: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2,
+            alignItems: 'center'
+          }}
+        >
+          <TextField
+            label="Search employees"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            fullWidth
+          />
+          <Button variant="outlined" onClick={() => setSearch('')}>
+            Clear
+          </Button>
+        </Box>
+      </Paper>
+
+      <Paper sx={{ height: 700, width: '100%', overflow: 'hidden', boxShadow: 4 }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -352,8 +404,32 @@ function EmployeesPage() {
           getRowId={(row) => row.id}
           disableRowSelectionOnClick
           initialState={{ pagination: { paginationModel } }}
+          sx={{
+            border: 'none',
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: 'primary.main',
+              color: '#fff',
+              borderBottom: 'none',
+              fontSize: '0.95rem'
+            },
+            '& .MuiDataGrid-columnSeparator': {
+              display: 'none'
+            },
+            '& .MuiDataGrid-cell': {
+              borderBottom: '1px solid rgba(224, 224, 224, 0.85)'
+            },
+            '& .MuiDataGrid-row:hover': {
+              backgroundColor: 'rgba(38, 92, 241, 0.05)'
+            },
+            '& .MuiDataGrid-footerContainer': {
+              borderTop: '1px solid rgba(224, 224, 224, 0.85)'
+            },
+            '& .MuiDataGrid-virtualScrollerRenderZone': {
+              backgroundColor: '#f7f9ff'
+            }
+          }}
         />
-      </div>
+      </Paper>
 
       {dialogOpen && (
         <EmployeeDialog

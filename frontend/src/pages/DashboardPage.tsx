@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import {
+  Box,
   Card,
   CardContent,
   Grid,
@@ -40,6 +41,16 @@ function DashboardPage() {
 
     return totalSalary / totalEmployees
   }, [data, totalEmployees])
+
+  const topCountries = useMemo(() => {
+    if (!data) return []
+    return [...data.employeesByCountry]
+      .sort((a, b) => b._count._all - a._count._all)
+      .slice(0, 5)
+  }, [data])
+
+  const formatCurrency = (value: number | null | undefined) =>
+    value == null ? '$0' : `$${Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
 
   return (
     <>
