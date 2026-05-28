@@ -72,16 +72,42 @@ function EmployeeDialog({
   }
 
   const handleSubmit = async () => {
-    if (!values.fullName || !values.email || !values.country || !values.jobTitle || !values.department || values.salary <= 0) {
-      setError('Please complete all fields and use a positive salary.')
+    setError('')
+    const trimmed = {
+      fullName: String(values.fullName || '').trim(),
+      email: String(values.email || '').trim(),
+      country: String(values.country || '').trim(),
+      jobTitle: String(values.jobTitle || '').trim(),
+      department: String(values.department || '').trim(),
+      salary: Number(values.salary)
+    }
+
+    if (trimmed.fullName.length < 2) {
+      setError('Full name must be at least 2 characters.')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(trimmed.email)) {
+      setError('Please enter a valid email address.')
+      return
+    }
+
+    if (trimmed.country.length < 2 || trimmed.jobTitle.length < 2 || trimmed.department.length < 2) {
+      setError('Country, job title and department must be at least 2 characters.')
+      return
+    }
+
+    if (!Number.isFinite(trimmed.salary) || trimmed.salary <= 0) {
+      setError('Salary must be a positive number.')
       return
     }
 
     try {
-      await onSubmit(values)
+      await onSubmit(trimmed)
       onClose()
-    } catch (submitError) {
-      setError('Unable to save employee. Please try again.')
+    } catch (submitError: any) {
+      setError(submitError?.message || 'Unable to save employee. Please try again.')
     }
   }
 
@@ -199,8 +225,8 @@ function EmployeesPage() {
       await queryClient.refetchQueries({ queryKey: ['employees'], exact: false })
       setNotification({ message: 'Employee added successfully.', severity: 'success' })
     },
-    onError: () => {
-      setNotification({ message: 'Unable to add employee.', severity: 'error' })
+    onError: (err: any) => {
+      setNotification({ message: err?.message || 'Unable to add employee.', severity: 'error' })
     }
   })
 
@@ -211,8 +237,8 @@ function EmployeesPage() {
       await queryClient.refetchQueries({ queryKey: ['employees'], exact: false })
       setNotification({ message: 'Employee updated successfully.', severity: 'success' })
     },
-    onError: () => {
-      setNotification({ message: 'Unable to update employee.', severity: 'error' })
+    onError: (err: any) => {
+      setNotification({ message: err?.message || 'Unable to update employee.', severity: 'error' })
     }
   })
 
@@ -223,8 +249,8 @@ function EmployeesPage() {
       await queryClient.refetchQueries({ queryKey: ['employees'], exact: false })
       setNotification({ message: 'Employee deleted successfully.', severity: 'success' })
     },
-    onError: () => {
-      setNotification({ message: 'Unable to delete employee.', severity: 'error' })
+    onError: (err: any) => {
+      setNotification({ message: err?.message || 'Unable to delete employee.', severity: 'error' })
     }
   })
 
@@ -252,18 +278,32 @@ function EmployeesPage() {
   }
 
   const handleCreate = async (values: EmployeeFormValues) => {
-    await createEmployeeMutation.mutateAsync(values)
+    try {
+      await createEmployeeMutation.mutateAsync(values)
+    } catch (err: any) {
+      setNotification({ message: err?.message || 'Unable to add employee.', severity: 'error' })
+      throw err
+    }
   }
 
   const handleUpdate = async (values: EmployeeFormValues) => {
     if (!currentEmployee) return
-    await updateEmployeeMutation.mutateAsync({ id: currentEmployee.id, data: values })
+    try {
+      await updateEmployeeMutation.mutateAsync({ id: currentEmployee.id, data: values })
+    } catch (err: any) {
+      setNotification({ message: err?.message || 'Unable to update employee.', severity: 'error' })
+      throw err
+    }
   }
 
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm('Delete employee? This action cannot be undone.')
     if (!confirmed) return
-    await deleteEmployeeMutation.mutateAsync(id)
+    try {
+      await deleteEmployeeMutation.mutateAsync(id)
+    } catch (err: any) {
+      setNotification({ message: err?.message || 'Unable to delete employee.', severity: 'error' })
+    }
   }
 
   const columns = [
@@ -417,7 +457,7 @@ function EmployeesPage() {
               fontSize: '0.95rem'
             },
             '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaderTitle, & .MuiDataGrid-columnHeaderTitleContainer': {
-              color: '#fff !important',
+              color: 'black !important',
             },
             '& .MuiDataGrid-columnHeaderTitle': {
               fontWeight: 700,

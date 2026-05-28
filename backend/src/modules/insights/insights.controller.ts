@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 
 import {
   getCountrySalaryInsights,
@@ -8,54 +8,67 @@ import {
 } from './insights.service'
 
 export const getCountryInsightsController = async (
-  req: Request<{ country: string }>,
-  res: Response
+  req: Request<{ country: string }> ,
+  res: Response,
+  next: NextFunction
 ) => {
-  const country = req.params.country
+  try {
+    const country = String(req.params.country || '').trim()
+    if (!country) return res.status(400).json({ success: false, message: 'Country is required' })
 
-  const insights = await getCountrySalaryInsights(country)
+    const insights = await getCountrySalaryInsights(country)
 
-  res.json({
-    success: true,
-    data: insights
-  })
+    res.json({ success: true, data: insights })
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const getJobTitleInsightsController = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const country = String(req.query.country)
-  const title = String(req.query.title)
+  try {
+    const country = String(req.query.country || '').trim()
+    const title = String(req.query.title || '').trim()
 
-  const insights = await getJobTitleInsights(country, title)
+    if (!country || !title) {
+      return res.status(400).json({ success: false, message: 'country and title query parameters are required' })
+    }
 
-  res.json({
-    success: true,
-    data: insights
-  })
+    const insights = await getJobTitleInsights(country, title)
+
+    res.json({ success: true, data: insights })
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const getDashboardMetricsController = async (
   _req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const metrics = await getDashboardMetrics()
+  try {
+    const metrics = await getDashboardMetrics()
 
-  res.json({
-    success: true,
-    data: metrics
-  })
+    res.json({ success: true, data: metrics })
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const getCountryCountsController = async (
   _req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const countryCounts = await getCountryCounts()
+  try {
+    const countryCounts = await getCountryCounts()
 
-  res.json({
-    success: true,
-    data: countryCounts
-  })
+    res.json({ success: true, data: countryCounts })
+  } catch (error) {
+    next(error)
+  }
 }

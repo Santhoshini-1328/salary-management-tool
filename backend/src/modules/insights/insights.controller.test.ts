@@ -19,6 +19,9 @@ describe('Insights Controller', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
+  const next = jest.fn((err: any) => {
+    if (err) throw err
+  })
 
   describe('getCountryInsightsController', () => {
     it('should return insights for a country', async () => {
@@ -38,7 +41,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getCountryInsightsController(req, res)
+      await getCountryInsightsController(req, res, next)
 
       expect(insightsService.getCountrySalaryInsights).toHaveBeenCalledWith('USA')
       expect(res.json).toHaveBeenCalledWith({
@@ -60,7 +63,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getCountryInsightsController(req, res)
+      await getCountryInsightsController(req, res, next)
 
       expect(res.json).toHaveBeenCalled()
     })
@@ -78,7 +81,7 @@ describe('Insights Controller', () => {
       } as any
 
       await expect(
-        getCountryInsightsController(req, res)
+        getCountryInsightsController(req, res, next)
       ).rejects.toThrow('Database error')
     })
   })
@@ -99,7 +102,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getJobTitleInsightsController(req, res)
+      await getJobTitleInsightsController(req, res, next)
 
       expect(insightsService.getJobTitleInsights).toHaveBeenCalledWith('USA', 'Engineer')
       expect(res.json).toHaveBeenCalledWith({
@@ -121,7 +124,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getJobTitleInsightsController(req, res)
+      await getJobTitleInsightsController(req, res, next)
 
       expect(res.json).toHaveBeenCalled()
     })
@@ -149,7 +152,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getDashboardMetricsController(req, res)
+      await getDashboardMetricsController(req, res, next)
 
       expect(insightsService.getDashboardMetrics).toHaveBeenCalled()
       expect(res.json).toHaveBeenCalledWith({
@@ -177,7 +180,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getDashboardMetricsController(req, res)
+      await getDashboardMetricsController(req, res, next)
 
       expect(res.json).toHaveBeenCalledWith({
         success: true,
@@ -201,7 +204,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getCountryCountsController(req, res)
+      await getCountryCountsController(req, res, next)
 
       expect(insightsService.getCountryCounts).toHaveBeenCalled()
       expect(res.json).toHaveBeenCalledWith({
@@ -218,7 +221,7 @@ describe('Insights Controller', () => {
         json: jest.fn()
       } as any
 
-      await getCountryCountsController(req, res)
+      await getCountryCountsController(req, res, next)
 
       expect(res.json).toHaveBeenCalledWith({
         success: true,
@@ -237,7 +240,7 @@ describe('Insights Controller', () => {
       } as any
 
       await expect(
-        getCountryCountsController(req, res)
+        getCountryCountsController(req, res, next)
       ).rejects.toThrow('Service error')
     })
   })

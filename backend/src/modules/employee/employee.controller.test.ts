@@ -23,6 +23,9 @@ describe('Employee Controller', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
+  const next = jest.fn((err: any) => {
+    if (err) throw err
+  })
 
   describe('getEmployeesController', () => {
     it('should return employees list with pagination', async () => {
@@ -50,7 +53,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await getEmployeesController(req, res)
+      await getEmployeesController(req, res, next)
 
       expect(res.json).toHaveBeenCalled()
       expect(res.json.mock.calls[0][0].success).toBe(true)
@@ -66,7 +69,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await getEmployeesController(req, res)
+      await getEmployeesController(req, res, next)
 
       expect(res.json).toHaveBeenCalled()
       expect(employeeService.getEmployees).toHaveBeenCalledWith(1, 10, '')
@@ -82,7 +85,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await getEmployeesController(req, res)
+      await getEmployeesController(req, res, next)
 
       expect(employeeService.getEmployees).toHaveBeenCalledWith(1, 10, 'Jane')
     })
@@ -112,7 +115,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await createEmployeeController(req, res)
+      await createEmployeeController(req, res, next)
 
       expect(res.status).toHaveBeenCalledWith(201)
       expect(res.json).toHaveBeenCalled()
@@ -126,7 +129,7 @@ describe('Employee Controller', () => {
       } as any
 
       try {
-        await createEmployeeController(req, res)
+        await createEmployeeController(req, res, next)
       } catch (error) {
         expect(error).toBeDefined()
       }
@@ -150,7 +153,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await createEmployeeController(req, res)
+      await createEmployeeController(req, res, next)
 
       expect(employeeService.createEmployee).toHaveBeenCalled()
     })
@@ -175,7 +178,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await updateEmployeeController(req, res)
+      await updateEmployeeController(req, res, next)
 
       expect(res.json).toHaveBeenCalled()
       expect(res.json.mock.calls[0][0].success).toBe(true)
@@ -194,7 +197,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await updateEmployeeController(req, res)
+      await updateEmployeeController(req, res, next)
 
       expect(employeeService.updateEmployee).toHaveBeenCalledWith('test-id', expect.any(Object))
     })
@@ -209,7 +212,7 @@ describe('Employee Controller', () => {
         json: jest.fn()
       } as any
 
-      await deleteEmployeeController(req, res)
+      await deleteEmployeeController(req, res, next)
 
       expect(employeeService.deleteEmployee).toHaveBeenCalledWith('1')
       expect(res.json).toHaveBeenCalledWith({
@@ -227,7 +230,7 @@ describe('Employee Controller', () => {
       } as any
 
       try {
-        await deleteEmployeeController(req, res)
+        await deleteEmployeeController(req, res, next)
       } catch (error) {
         expect(error).toBeDefined()
       }

@@ -122,7 +122,7 @@ function InsightsPage() {
             </FormControl>
 
             {countryInsightsQuery.error && (
-              <Alert severity="error">Unable to load country insights.</Alert>
+              <Alert severity="error">{countryInsightsQuery.error.message || 'Unable to load country insights.'}</Alert>
             )}
 
             {countryInsightsQuery.isSuccess && (
@@ -179,7 +179,7 @@ function InsightsPage() {
 
             {jobTitleInsightsQuery.error && (
               <Alert severity="error" sx={{ mt: 2 }}>
-                Unable to load job title insights.
+                {jobTitleInsightsQuery.error.message || 'Unable to load job title insights.'}
               </Alert>
             )}
 
