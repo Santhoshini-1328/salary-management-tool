@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "seed": "ts-node --transpile-only prisma/seed.ts",
     "seed:reset": "ts-node --transpile-only prisma/seed.ts --reset",
     "seed:append": "ts-node --transpile-only prisma/seed.ts --append"
